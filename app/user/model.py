@@ -1,5 +1,5 @@
-from app import db
-from flask_security import UserMixin, RoleMixin
+from app import db, lm
+from passlib.apps import custom_app_context as pwd_context
 
 
 class Provider(db.Model):
@@ -13,32 +13,53 @@ class Provider(db.Model):
         return "Provider {} on {}".format(self.name, self.street_address)
 
 
-# class EmailLogin(db.Model):
-#    email = db.Column(db.String(500), primary_key=True)
-#    token = db.Column(db.String(500))
-#    provider_id = db.Column(db.Integer, db.ForeignKey("provider.id"))
-#    provider_ = db.relationship('Provider', backref='emaillogin')
+@lm.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 
-# flask security model
-roles_users = db.Table('roles_users',
-                       db.Column('login_id', db.Integer(),
-                                 db.ForeignKey('email_login.id')),
-                       db.Column('role_id', db.Integer(),
-                                 db.ForeignKey('role.id')))
-
-
-class Role(db.Model, RoleMixin):
+class Role(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(80), unique=True)
     description = db.Column(db.String(255))
 
 
-class EmailLogin(db.Model, UserMixin):
+class EmailLogin(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     email = db.Column(db.String(255), unique=True)
-    password = db.Column(db.String(255))
+    password_hash = db.Column(db.String(255))
     active = db.Column(db.Boolean())
     confirmed_at = db.Column(db.DateTime())
-    roles = db.relationship('Role', secondary=roles_users,
-                            backref=db.backref('EmailLogin', lazy='dynamic'))
+
+    def hash_password(self, password):
+        self.password_hash = pwd_context.encrypt(password)
+
+    def verify_password(self, password):
+        return pwd_context.verify(password, self.password_hash)
+
+    def __repr__(self):
+        return 'LoginEmail for user {} : {}'.format(self.user_id, self.email)
+
+
+class User(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    email_login = db.relationship('EmailLogin', uselist = False, backref = 'user')
+
+    @property
+    def is_authenticated(self):
+        return True
+
+    @property
+    def is_active(self):
+        return True
+
+    @property
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        try:
+            return unicode(self.id)  # python 2
+        except NameError:
+            return str(self.id)  # python 3
