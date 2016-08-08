@@ -58,14 +58,18 @@
 
     "loggers": {
         "sqlalchemy.engine": {
-            "level": "DEBUG",
+            "level": "INFO",
             "handlers": ["sql_file_handler"],
             "propagate": "no"
+        }, 
+        "app" : {
+            "level" : "DEBUG",
+            "handlers" : ["debug_file_handler"]
         }
     },
 
     "root": {
-        "level": "DEBUG",
+        "level": "INFO",
         "handlers": ["console", "debug_file_handler", "info_file_handler", "error_file_handler"]
     }
 }
