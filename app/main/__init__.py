@@ -1,11 +1,8 @@
 from flask import Blueprint
+import logging
 
 
-main = Blueprint('main', __name__, template_folder = 'templates')
+logger = logging.getLogger(__name__)
+main = Blueprint('main', __name__, template_folder='templates')
 
 import controller
-
-from app import app
-
-app.register_blueprint(main)
-

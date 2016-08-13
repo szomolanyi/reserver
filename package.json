@@ -10,5 +10,12 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "BSD-2-Clause"
+  "license": "BSD-2-Clause",
+  "devDependencies": {
+    "gulp": "~3.9.1",
+    "gulp-util": "~3.0.7",
+    "gulp-ruby-sass": "~2.0.6",
+    "gulp-notify": "~2.2.0",
+    "gulp-bower": "0.0.13"
+  }
 }

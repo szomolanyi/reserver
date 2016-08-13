@@ -66,10 +66,5 @@
             "level" : "DEBUG",
             "handlers" : ["debug_file_handler"]
         }
-    },
-
-    "root": {
-        "level": "INFO",
-        "handlers": ["console", "debug_file_handler", "info_file_handler", "error_file_handler"]
     }
 }
